@@ -222,3 +222,5 @@ docker-compose build
 docker-compose up
 docker-compose down
 
+For Testing API postman Link:
+https://go.postman.co/workspace/3b281700-e678-4d55-8b20-aede8075d196
