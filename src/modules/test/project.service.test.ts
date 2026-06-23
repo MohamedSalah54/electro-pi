@@ -1,6 +1,12 @@
 import { Project } from "../projects/project.model";
 import { ProjectService } from "../projects/project.service";
 
+const mockQuery = (data: any) => ({
+  sort: jest.fn().mockReturnThis(),
+  skip: jest.fn().mockReturnThis(),
+  limit: jest.fn().mockResolvedValue(data),
+});
+
 jest.mock("../projects/project.model");
 describe("ProjectService", () => {
   afterEach(() => {
@@ -23,7 +29,8 @@ describe("ProjectService", () => {
   });
 
   it("should return all projects", async () => {
-    (Project.find as jest.Mock).mockResolvedValue([{ _id: "1" }]);
+    (Project.find as jest.Mock).mockReturnValue(mockQuery([{ _id: "1" }]));
+
     (Project.countDocuments as jest.Mock).mockResolvedValue(1);
 
     const result = await ProjectService.findAll("userId", {});
