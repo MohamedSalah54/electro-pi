@@ -21,12 +21,7 @@ export class TaskService {
     });
   }
 
-  static async findAll(
-    projectId: string,
-    userId: string,
-    status?: string,
-    priority?: string,
-  ) {
+  static async findAll(projectId: string, userId: string, query: any) {
     const project = await Project.findOne({
       _id: projectId,
       owner: userId,
@@ -43,15 +38,36 @@ export class TaskService {
       project: projectId,
     };
 
-    if (status) {
-      filter.status = status;
+    if (query.status) {
+      filter.status = query.status;
     }
 
-    if (priority) {
-      filter.priority = priority;
+    if (query.priority) {
+      filter.priority = query.priority;
     }
 
-    return await Task.find(filter);
+    const page = parseInt(query.page) || 1;
+    const limit = parseInt(query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const sortBy = query.sort || "createdAt";
+    const order = query.order === "asc" ? 1 : -1;
+
+    const tasks = await Task.find(filter)
+      .sort({ [sortBy]: order })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Task.countDocuments(filter);
+
+    return {
+      data: tasks,
+      pagination: {
+        total,
+        page,
+        limit,
+      },
+    };
   }
 
   static async findOne(id: string, userId: string) {

@@ -17,7 +17,7 @@ const projectSchema = new Schema<IProject>(
     status: {
       type: String,
       enum: Object.values(ProjectStatus),
-      default: ProjectStatus.PENDING,
+      default: ProjectStatus.ACTIVE,
     },
 
     owner: {

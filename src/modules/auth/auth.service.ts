@@ -1,8 +1,7 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { User } from "../users/user.model";
 import { LoginDto, RegisterDto } from "./auth.types";
-import { env } from "../../configs/env";
+import { generateToken } from "../../utils/jwt";
+import { comparePassword, hashPassword } from "../../utils/hash";
 
 export class AuthService {
   static async register(data: RegisterDto) {
@@ -17,7 +16,7 @@ export class AuthService {
       };
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await hashPassword(data.password);
 
     const user = await User.create({
       ...data,
@@ -39,7 +38,7 @@ export class AuthService {
       };
     }
 
-    const isMatch = await bcrypt.compare(data.password, user.password);
+    const isMatch = await comparePassword(data.password, user.password);
 
     if (!isMatch) {
       throw {
@@ -48,16 +47,10 @@ export class AuthService {
       };
     }
 
-    const token = jwt.sign(
-      {
-        id: user._id,
-        role: user.role,
-      },
-      env.JWT_SECRET!,
-      {
-        expiresIn: "7d",
-      },
-    );
+    const token = generateToken({
+      id: user._id,
+      role: user.role,
+    });
 
     return {
       token,

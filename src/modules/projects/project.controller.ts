@@ -12,11 +12,11 @@ export class ProjectController {
   }
 
   static async findAll(req: any, res: Response) {
-    const projects = await ProjectService.findAll(req.user.id);
+    const result = await ProjectService.findAll(req.user.id, req.query);
 
     res.status(200).json({
       success: true,
-      data: projects,
+      ...result,
     });
   }
 

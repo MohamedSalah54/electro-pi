@@ -15,19 +15,18 @@ export class TaskController {
     });
   }
 
-  static async findAll(req: any, res: Response) {
-    const tasks = await TaskService.findAll(
-      req.params.projectId,
-      req.user.id,
-      req.query.status as string,
-      req.query.priority as string,
-    );
+static async findAll(req: any, res: Response) {
+  const result = await TaskService.findAll(
+    req.params.projectId,
+    req.user.id,
+    req.query
+  );
 
-    res.status(200).json({
-      success: true,
-      data: tasks,
-    });
-  }
+  res.status(200).json({
+    success: true,
+    ...result,
+  });
+}
 
   static async findOne(req: any, res: Response) {
     const task = await TaskService.findOne(req.params.id, req.user.id);

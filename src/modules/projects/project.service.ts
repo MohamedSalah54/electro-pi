@@ -8,8 +8,30 @@ export class ProjectService {
     });
   }
 
-  static async findAll(owner: string) {
-    return await Project.find({ owner });
+  static async findAll(owner: string, query: any) {
+    const page = parseInt(query.page) || 1;
+    const limit = parseInt(query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const sortBy = query.sort || "createdAt";
+    const order = query.order === "asc" ? 1 : -1;
+
+    const projects = await Project.find({ owner })
+      .sort({ [sortBy]: order })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Project.countDocuments({ owner });
+
+    return {
+      data: projects,
+      pagination: {
+        total,
+        page,
+        limit,
+      },
+    };
   }
 
   static async findById(id: string, owner: string) {
