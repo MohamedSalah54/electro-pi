@@ -17,7 +17,7 @@ const runSeed = async () => {
 
   const user = await User.create({
     name: "Admin",
-    email: "admin@test.com",
+    email: "admin1@test.com",
     password: hashedPassword,
     role: UserRole.ADMIN,
   });

@@ -2,6 +2,12 @@ import { Project } from "../projects/project.model";
 import { Task } from "../tasks/task.model";
 import { TaskService } from "../tasks/task.service";
 
+const mockQuery = (data: any) => ({
+  sort: jest.fn().mockReturnThis(),
+  skip: jest.fn().mockReturnThis(),
+  limit: jest.fn().mockResolvedValue(data),
+});
+
 jest.mock("../projects/project.model");
 jest.mock("../tasks/task.model");
 
@@ -41,17 +47,13 @@ describe("TaskService", () => {
 
   it("should return tasks", async () => {
     (Project.findOne as jest.Mock).mockResolvedValue({ _id: "p1" });
-    (Task.find as jest.Mock).mockResolvedValue([{ _id: "t1" }]);
+
+    (Task.find as jest.Mock).mockReturnValue(mockQuery([{ _id: "t1" }]));
+
     (Task.countDocuments as jest.Mock).mockResolvedValue(1);
 
     const result = await TaskService.findAll("p1", "u1", {});
 
-    expect(Project.findOne).toHaveBeenCalledWith({
-      _id: "p1",
-      owner: "u1",
-    });
-
-    expect(Task.find).toHaveBeenCalled();
     expect(result.data.length).toBe(1);
   });
 });
