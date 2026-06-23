@@ -24,11 +24,12 @@ describe("ProjectService", () => {
 
   it("should return all projects", async () => {
     (Project.find as jest.Mock).mockResolvedValue([{ _id: "1" }]);
+    (Project.countDocuments as jest.Mock).mockResolvedValue(1);
 
-    const result = await ProjectService.findAll("userId");
+    const result = await ProjectService.findAll("userId", {});
 
     expect(Project.find).toHaveBeenCalledWith({ owner: "userId" });
-    expect(result.length).toBe(1);
+    expect(result.data.length).toBe(1);
   });
 
   it("should throw if project not found", async () => {

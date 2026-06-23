@@ -39,16 +39,19 @@ describe("TaskService", () => {
     });
   });
 
-  describe("findAll", () => {
-    it("should return tasks", async () => {
-      (Project.findOne as jest.Mock).mockResolvedValue({ _id: "p1" });
+  it("should return tasks", async () => {
+    (Project.findOne as jest.Mock).mockResolvedValue({ _id: "p1" });
+    (Task.find as jest.Mock).mockResolvedValue([{ _id: "t1" }]);
+    (Task.countDocuments as jest.Mock).mockResolvedValue(1);
 
-      (Task.find as jest.Mock).mockResolvedValue([{ _id: "t1" }]);
+    const result = await TaskService.findAll("p1", "u1", {});
 
-      const result = await TaskService.findAll("p1", "u1");
-
-      expect(Task.find).toHaveBeenCalled();
-      expect(result.length).toBe(1);
+    expect(Project.findOne).toHaveBeenCalledWith({
+      _id: "p1",
+      owner: "u1",
     });
+
+    expect(Task.find).toHaveBeenCalled();
+    expect(result.data.length).toBe(1);
   });
 });
